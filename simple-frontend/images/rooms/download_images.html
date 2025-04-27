@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Download Hostel Room Images</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>Downloading Hostel Room Images</h1>
+    <div id="status" class="status"></div>
+
+    <script>
+        const images = [
+            {
+                url: 'https://images.unsplash.com/photo-1566669437685-2f844978e1e2?w=800&h=600&fit=crop',
+                name: 'room1.jpg',
+                caption: 'Room Overview'
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1505693314120-0d443867891c?w=800&h=600&fit=crop',
+                name: 'room2.jpg',
+                caption: 'Bed Area'
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800&h=600&fit=crop',
+                name: 'room3.jpg',
+                caption: 'Study Area'
+            },
+            {
+                url: 'https://images.unsplash.com/photo-1584622650111-993af426f11a?w=800&h=600&fit=crop',
+                name: 'room4.jpg',
+                caption: 'Bathroom'
+            }
+        ];
+
+        async function downloadImage(image) {
+            try {
+                const response = await fetch(image.url);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = image.name;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                return true;
+            } catch (error) {
+                console.error(`Error downloading ${image.name}:`, error);
+                return false;
+            }
+        }
+
+        async function downloadAllImages() {
+            const status = document.getElementById('status');
+            let successCount = 0;
+            let errorCount = 0;
+
+            for (const image of images) {
+                status.textContent = `Downloading ${image.name}...`;
+                const success = await downloadImage(image);
+                if (success) {
+                    successCount++;
+                } else {
+                    errorCount++;
+                }
+            }
+
+            if (errorCount === 0) {
+                status.className = 'status success';
+                status.textContent = `Successfully downloaded ${successCount} images!`;
+            } else {
+                status.className = 'status error';
+                status.textContent = `Downloaded ${successCount} images, ${errorCount} failed.`;
+            }
+        }
+
+        // Start downloading when page loads
+        downloadAllImages();
+    </script>
+</body>
+</html> 

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Building Base -->
+    <path d="M8 32h24v2H8z" fill="#E31837"/>
+    <!-- Main Building Structure -->
+    <path d="M10 12h20v20H10z" fill="#E31837"/>
+    <!-- Roof -->
+    <path d="M20 4L32 12H8z" fill="#E31837"/>
+    <!-- Windows -->
+    <rect x="13" y="15" width="4" height="4" fill="white"/>
+    <rect x="23" y="15" width="4" height="4" fill="white"/>
+    <rect x="13" y="22" width="4" height="4" fill="white"/>
+    <rect x="23" y="22" width="4" height="4" fill="white"/>
+    <!-- Door -->
+    <path d="M18 26h4v6h-4z" fill="white"/>
+</svg> 

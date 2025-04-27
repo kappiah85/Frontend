@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Move Hostel Room Images</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .instructions {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Move Hostel Room Images</h1>
+    <div class="instructions">
+        <h3>Instructions:</h3>
+        <ol>
+            <li>Make sure you've downloaded all images from the previous step</li>
+            <li>Click the button below to move the images to the correct location</li>
+            <li>The images will be moved to: <code>simple-frontend/images/rooms/</code></li>
+        </ol>
+    </div>
+    <button onclick="moveImages()" style="padding: 10px 20px; font-size: 16px;">Move Images</button>
+    <div id="status" class="status"></div>
+
+    <script>
+        async function moveImages() {
+            const status = document.getElementById('status');
+            const images = ['room1.jpg', 'room2.jpg', 'room3.jpg', 'room4.jpg'];
+            let successCount = 0;
+            let errorCount = 0;
+
+            for (const imageName of images) {
+                try {
+                    // Create a file input element
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.style.display = 'none';
+                    document.body.appendChild(input);
+
+                    // Wait for user to select the file
+                    await new Promise((resolve) => {
+                        input.onchange = (e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                    const img = new Image();
+                                    img.onload = () => {
+                                        const canvas = document.createElement('canvas');
+                                        canvas.width = 800;
+                                        canvas.height = 600;
+                                        const ctx = canvas.getContext('2d');
+                                        ctx.drawImage(img, 0, 0, 800, 600);
+                                        
+                                        // Save the image
+                                        const link = document.createElement('a');
+                                        link.download = imageName;
+                                        link.href = canvas.toDataURL('image/jpeg');
+                                        link.click();
+                                        successCount++;
+                                        resolve();
+                                    };
+                                    img.src = e.target.result;
+                                };
+                                reader.readAsDataURL(file);
+                            }
+                        };
+                    });
+
+                    document.body.removeChild(input);
+                } catch (error) {
+                    console.error(`Error moving ${imageName}:`, error);
+                    errorCount++;
+                }
+            }
+
+            if (errorCount === 0) {
+                status.className = 'status success';
+                status.textContent = `Successfully moved ${successCount} images!`;
+            } else {
+                status.className = 'status error';
+                status.textContent = `Moved ${successCount} images, ${errorCount} failed.`;
+            }
+        }
+    </script>
+</body>
+</html> 

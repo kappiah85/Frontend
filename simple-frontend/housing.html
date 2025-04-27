@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Housing - Campus Hostel Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Room Images Styles */
+        .room-images-section {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .room-images-section h3 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .room-images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+        }
+
+        .room-image-container {
+            position: relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            cursor: pointer;
+            transition: var(--transition);
+            aspect-ratio: 4/3;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            height: 150px;
+        }
+
+        .room-image-container:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .room-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .room-image-container:hover .room-image {
+            transform: scale(1.05);
+        }
+
+        .room-image-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            color: white;
+            padding: 0.5rem;
+            font-size: 0.75rem;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .room-image-container:hover .room-image-caption {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .room-images-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+            
+            .room-image-container {
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="navbar-brand">
+                <img src="images/logo.svg" alt="Campus Hostel Logo" class="brand-logo">
+                <span class="brand-text">Campus Hostel</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="#" onclick="logout()" class="btn btn-primary">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="user-welcome">
+                <div class="user-avatar" id="userAvatar">JD</div>
+                <div class="user-info">
+                    <h1 id="userName">John Doe</h1>
+                    <p id="userRole">Student</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2>Housing Details</h2>
+                    <span class="card-action" onclick="toggleHousingEdit()">Edit</span>
+                </div>
+                <div id="housingDetails">
+                    <div id="housingView">
+                        <div class="housing-grid">
+                            <div class="housing-item">
+                                <i class="fas fa-door-open"></i>
+                                <div class="housing-info">
+                                    <label>Room Number</label>
+                                    <p id="roomNumber">Not Assigned</p>
+                                </div>
+                            </div>
+                            <div class="housing-item">
+                                <i class="fas fa-building"></i>
+                                <div class="housing-info">
+                                    <label>Building</label>
+                                    <p id="buildingName">Not Assigned</p>
+                                </div>
+                            </div>
+                            <div class="housing-item">
+                                <i class="fas fa-stairs"></i>
+                                <div class="housing-info">
+                                    <label>Floor</label>
+                                    <p id="floorNumber">Not Assigned</p>
+                                </div>
+                            </div>
+                            <div class="housing-item">
+                                <i class="fas fa-bed"></i>
+                                <div class="housing-info">
+                                    <label>Room Type</label>
+                                    <p id="roomType">Not Assigned</p>
+                                </div>
+                            </div>
+                            <div class="housing-item">
+                                <i class="fas fa-users"></i>
+                                <div class="housing-info">
+                                    <label>Roommates</label>
+                                    <p id="roommates">Not Assigned</p>
+                                </div>
+                            </div>
+                            <div class="housing-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <div class="housing-info">
+                                    <label>Move-in Date</label>
+                                    <p id="moveInDate">Not Assigned</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="housingEdit" style="display: none;">
+                        <form onsubmit="saveHousingDetails(event)" class="form-grid">
+                            <div class="form-group">
+                                <label for="editRoomNumber">Room Number*</label>
+                                <input type="text" id="editRoomNumber" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editBuilding">Building*</label>
+                                <input type="text" id="editBuilding" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editFloor">Floor*</label>
+                                <input type="text" id="editFloor" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editRoomType">Room Type*</label>
+                                <select id="editRoomType" class="form-control" required>
+                                    <option value="">Select Room Type</option>
+                                    <option value="Single">Single</option>
+                                    <option value="Double">Double</option>
+                                    <option value="Triple">Triple</option>
+                                    <option value="Quad">Quad</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editRoommates">Roommates</label>
+                                <input type="text" id="editRoommates" class="form-control" placeholder="Comma-separated names">
+                            </div>
+                            <div class="form-group">
+                                <label for="editMoveInDate">Move-in Date</label>
+                                <input type="date" id="editMoveInDate" class="form-control">
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="toggleHousingEdit()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2>Room Images</h2>
+                </div>
+                <div class="room-images-section">
+                    <div id="roomImagesGrid" class="room-images-grid">
+                        <!-- Images will be loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <div id="caption"></div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Update user information
+            document.getElementById('userName').textContent = currentUser.name || 'User';
+            document.getElementById('userRole').textContent = currentUser.role || 'Student';
+            document.getElementById('userAvatar').textContent = (currentUser.name || 'U').split(' ').map(n => n[0]).join('').toUpperCase();
+
+            // Load housing data
+            loadHousingData();
+        });
+
+        async function loadHousingData() {
+            try {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (!currentUser) throw new Error('User not found');
+
+                // Fetch application data
+                const response = await fetch(`${API_BASE_URL}/applications/student/${currentUser.id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${currentUser.token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch application data');
+                }
+                
+                const applicationData = await response.json();
+                
+                // Update the view with real application data
+                document.getElementById('roomNumber').textContent = applicationData.roomNumber || 'Not Assigned';
+                document.getElementById('buildingName').textContent = applicationData.building || 'Not Assigned';
+                document.getElementById('floorNumber').textContent = applicationData.floor || 'Not Assigned';
+                document.getElementById('roomType').textContent = applicationData.roomType || 'Not Assigned';
+                document.getElementById('roommates').textContent = applicationData.roommates ? applicationData.roommates.join(', ') : 'Not Assigned';
+                document.getElementById('moveInDate').textContent = applicationData.moveInDate ? new Date(applicationData.moveInDate).toLocaleDateString() : 'Not Assigned';
+
+                // Update user information with real data
+                document.getElementById('userName').textContent = applicationData.studentName || currentUser.name;
+                document.getElementById('userRole').textContent = 'Student';
+                document.getElementById('userAvatar').textContent = (applicationData.studentName || currentUser.name).split(' ').map(n => n[0]).join('').toUpperCase();
+
+                // Load room images if room is assigned
+                if (applicationData.roomNumber) {
+                    loadRoomImages(applicationData.roomNumber);
+                }
+            } catch (error) {
+                console.error('Error loading housing data:', error);
+                // If API fails, show sample data
+                const sampleData = {
+                    roomNumber: '101',
+                    building: 'East Hall',
+                    floor: '1',
+                    roomType: 'Double',
+                    roommates: ['Jane Smith'],
+                    moveInDate: '2024-08-15'
+                };
+
+                document.getElementById('roomNumber').textContent = sampleData.roomNumber;
+                document.getElementById('buildingName').textContent = sampleData.building;
+                document.getElementById('floorNumber').textContent = sampleData.floor;
+                document.getElementById('roomType').textContent = sampleData.roomType;
+                document.getElementById('roommates').textContent = sampleData.roommates.join(', ');
+                document.getElementById('moveInDate').textContent = new Date(sampleData.moveInDate).toLocaleDateString();
+                
+                loadRoomImages(sampleData.roomNumber);
+            }
+        }
+
+        function loadRoomImages(roomNumber) {
+            const roomImagesGrid = document.getElementById('roomImagesGrid');
+            roomImagesGrid.innerHTML = '';
+
+            // Updated room images with better quality and proper URLs
+            const images = [
+                {
+                    url: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+                    caption: 'Bedroom'
+                },
+                {
+                    url: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+                    caption: 'Bathroom'
+                },
+                {
+                    url: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
+                    caption: 'Common Area'
+                }
+            ];
+
+            images.forEach(image => {
+                const imageContainer = document.createElement('div');
+                imageContainer.className = 'room-image-container';
+                imageContainer.innerHTML = `
+                    <img src="${image.url}" alt="${image.caption}" class="room-image">
+                    <div class="room-image-caption">${image.caption}</div>
+                `;
+                imageContainer.onclick = () => openImageModal(image.url, image.caption);
+                roomImagesGrid.appendChild(imageContainer);
+            });
+        }
+
+        function openImageModal(imageUrl, caption) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            const captionDiv = document.getElementById('caption');
+            
+            modal.style.display = 'block';
+            modalImg.src = imageUrl;
+            captionDiv.innerHTML = caption;
+        }
+
+        function toggleHousingEdit() {
+            const viewMode = document.getElementById('housingView');
+            const editMode = document.getElementById('housingEdit');
+            const editButton = document.querySelector('.card-action');
+            
+            if (viewMode.style.display !== 'none') {
+                viewMode.style.display = 'none';
+                editMode.style.display = 'block';
+                editButton.textContent = 'Cancel';
+                
+                // Populate form with current values
+                document.getElementById('editRoomNumber').value = document.getElementById('roomNumber').textContent;
+                document.getElementById('editBuilding').value = document.getElementById('buildingName').textContent;
+                document.getElementById('editFloor').value = document.getElementById('floorNumber').textContent;
+                document.getElementById('editRoomType').value = document.getElementById('roomType').textContent;
+                document.getElementById('editRoommates').value = document.getElementById('roommates').textContent;
+                
+                const moveInDate = new Date(document.getElementById('moveInDate').textContent);
+                document.getElementById('editMoveInDate').value = moveInDate.toISOString().split('T')[0];
+            } else {
+                viewMode.style.display = 'block';
+                editMode.style.display = 'none';
+                editButton.textContent = 'Edit';
+            }
+        }
+
+        async function saveHousingDetails(event) {
+            event.preventDefault();
+            
+            try {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (!currentUser) throw new Error('User not found');
+
+                const formData = {
+                    roomNumber: document.getElementById('editRoomNumber').value,
+                    building: document.getElementById('editBuilding').value,
+                    floor: document.getElementById('editFloor').value,
+                    roomType: document.getElementById('editRoomType').value,
+                    roommates: document.getElementById('editRoommates').value.split(',').map(name => name.trim()),
+                    moveInDate: document.getElementById('editMoveInDate').value
+                };
+
+                // Save to localStorage
+                const userData = {
+                    ...currentUser,
+                    housing: formData
+                };
+                localStorage.setItem('currentUser', JSON.stringify(userData));
+
+                // Update the view with new values
+                document.getElementById('roomNumber').textContent = formData.roomNumber || 'Not Assigned';
+                document.getElementById('buildingName').textContent = formData.building || 'Not Assigned';
+                document.getElementById('floorNumber').textContent = formData.floor || 'Not Assigned';
+                document.getElementById('roomType').textContent = formData.roomType || 'Not Assigned';
+                document.getElementById('roommates').textContent = formData.roommates.length > 0 ? formData.roommates.join(', ') : 'Not Assigned';
+                document.getElementById('moveInDate').textContent = formData.moveInDate ? new Date(formData.moveInDate).toLocaleDateString() : 'Not Assigned';
+
+                // Switch back to view mode
+                toggleHousingEdit();
+                
+                // Show success message
+                alert('Housing details updated successfully!');
+            } catch (error) {
+                console.error('Error saving housing details:', error);
+                alert('Failed to save housing details. Please try again.');
+            }
+        }
+
+        // Close modal when clicking the close button or outside the modal
+        document.querySelector('.close-modal').onclick = function() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html> 

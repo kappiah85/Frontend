@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Applications Test</title>
+</head>
+<body>
+    <h1>Applications Test</h1>
+    <div id="result"></div>
+
+    <script>
+        // Test getting all applications
+        fetch('http://localhost:3000/api/applications')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML += '<h2>All Applications:</h2>';
+                document.getElementById('result').innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML += `<p>Error fetching all applications: ${error.message}</p>`;
+            });
+
+        // Test getting a specific application (if any exist)
+        fetch('http://localhost:3000/api/applications/1')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerHTML += '<h2>Single Application:</h2>';
+                document.getElementById('result').innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML += `<p>Error fetching single application: ${error.message}</p>`;
+            });
+    </script>
+</body>
+</html> 
